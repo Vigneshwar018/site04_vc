@@ -19,6 +19,9 @@ var gulp = require('gulp'),
     browserSync = require('browser-sync').create();
     // autoprefixer = require('autoprefixer');
 
+env = 'development';
+// env = 'production';
+
 var env,
     jsSources,
     sassSources,
@@ -27,10 +30,6 @@ var env,
     sassStyle;
 
 var reload = browserSync.reload;
-
-env = 'development';
-// env = 'production';
-
 
 if (env==='development') {
   outputDir = 'development/';
@@ -79,6 +78,7 @@ htmlSources = [outputDir + '*.html'];
 //     PORT: 1337
 //   }
 // };
+
 
 
 //js
@@ -194,8 +194,8 @@ gulp.task('connect', function() {
 
 //browser-sync
 gulp.task('browser-sync', ['sass'], function() {
-    browserSync.init({
-        proxy: "127.0.0.98:80",
+    browserSync.init(gulpif(env === 'production', {
+        proxy: "127.0.0.98:80/s04/production/",
         port:80,
         // server: "./development",
         // files: LIVE_RELOAD_FILES,
@@ -205,7 +205,21 @@ gulp.task('browser-sync', ['sass'], function() {
         console.log(err);
       else
         console.log('BrowserSync is ready.');
-      });
+      }),
+    gulpif(env === 'development', {
+        proxy: "127.0.0.98:80/s04/development/",
+        port:80,
+        // server: "./development",
+        // files: LIVE_RELOAD_FILES,
+        notify: false
+    }, function (err, bs) {
+      if (err)
+        console.log(err);
+      else
+        console.log('BrowserSync is ready.');
+      })
+    );
+
 });
 
 //html
@@ -260,5 +274,17 @@ gulp.task('zip', function () {
     .pipe(gulp.dest('./'))
 });//zip
 
+gulp.task('env', function() {
+  if (env === 'production')
+        console.log('env = production!! \n environment is production files will be output in production \n                              _                   _     _\n                             | |                 | |   (_)\n   _ __    _ __    ___     __| |  _   _    ___   | |_   _    ___    _ __\n  | \'_ \\  | \'__|  / _ \\  /  _` | | | | |  / __|  | __| | |  / _ \\  | \'_ \\\n  | |_) | | |    | (_) | | (_| | | |_| | | (__   | |_  | | | (_) | | | | |\n  | .__/  |_|     \\___/   \\__,_|  \\__,_|  \\___|   \\__| |_|  \\___/  |_| |_|\n  | |\n  |_|');
+      else
+        console.log('env = development!!  \n environment is development files will be output in development\n ___  ____ _  _ ____ _    ____ ___  _  _ ____ _  _ ___\n |  \\ |___ |  | |___ |    |  | |__] |\\/| |___ |\\ |  |\n |__/ |___  \\/  |___ |___ |__| |    |  | |___ | \\|  |');
+});
+
 // gulp.task('default', ['watch', 'html', 'sass', 'move', 'browser-sync', 'connect']);
-gulp.task('default', ['watch', 'sass', 'browser-sync', 'js', 'php', 'html', 'move', 'connect']);
+gulp.task('default', ['watch', 'sass', 'browser-sync', 'js', 'php', 'html', 'move','connect' ], function() {
+  if (env === 'production')
+        console.log('\n env = production!! \n environment is production files will be output in production \n                              _                   _     _\n                             | |                 | |   (_)\n   _ __    _ __    ___     __| |  _   _    ___   | |_   _    ___    _ __\n  | \'_ \\  | \'__|  / _ \\  /  _` | | | | |  / __|  | __| | |  / _ \\  | \'_ \\\n  | |_) | | |    | (_) | | (_| | | |_| | | (__   | |_  | | | (_) | | | | |\n  | .__/  |_|     \\___/   \\__,_|  \\__,_|  \\___|   \\__| |_|  \\___/  |_| |_|\n  | |\n  |_|\n');
+      else
+        console.log('\n env = development!!  \n environment is development files will be output in development\n ___  ____ _  _ ____ _    ____ ___  _  _ ____ _  _ ___\n |  \\ |___ |  | |___ |    |  | |__] |\\/| |___ |\\ |  |\n |__/ |___  \\/  |___ |___ |__| |    |  | |___ | \\|  |\n');
+});

@@ -1,12 +1,8 @@
-<?php include("header.html"); ?>
-<title>HOME | INDEX</title>
-<?php include("nav.html"); ?>
 
-<section class="main">
-	<h1>home</h1>
-	<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-	tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-	quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-	consequat.sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-</section>
+<?php include("head.html");?>
+	<title>HOME</title>
+<?php include("nav.html");?>
+
+
+
 <?php include("footer.html");?>
