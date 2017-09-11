@@ -2,3 +2,72 @@
 @import "variables";
 // @import "materialize-src/sass/materialize.scss";
 
+#header {
+	width: 100%;
+	display: inline-flex;
+	align-content: center;
+	justify-content: center;
+	background-color: $c-main;
+	.logo {
+		width: 20%;
+		padding: 10px ;
+		margin:20px auto;
+		font-size: 25px;
+		text-align: center;
+		a {
+			color: $c-def;
+			margin:20px auto;
+
+		}
+	}
+	nav {
+		width: 80%;
+		text-align:center;
+		margin:20px auto;
+
+		ul {
+			width: 100%;
+			font-size: 0;
+			margin: auto;
+			display: flex;
+			align-content:center;
+			justify-content: center;
+			box-shadow: 1px 2px 5px 0px rgba(0,0,0,0.5);
+
+			li {
+				display: inline-flex;
+				font-size: 25px;
+				&:first-child a {
+					border-radius: 50px 0 0 50px;
+
+					}
+				&:last-child a {
+					border-radius:  0 50px 50px 0 ;
+
+					}
+				&:not(:last-child){
+					border-right: 1px solid $c-main;
+
+				}
+
+				a {
+					padding: 10px;
+					background-color: $c-def;
+					color: $c-main;
+					text-transform: uppercase;
+					&:hover , &:focus {
+						background-color: $c-main;
+						color: $c-def;
+					}
+				}
+			}
+		}
+	}
+	.phone {
+		width: 20%;
+		font-size: 25px;
+		padding: 10px ;
+		color: $c-def;
+		margin: 20px auto;
+	}
+}
