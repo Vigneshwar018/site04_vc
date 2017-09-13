@@ -1,0 +1,27 @@
+
+.container {
+	width: 80%;
+	margin: auto;
+}
+.hero {
+	@include background-gradient($c-main 90%,$c-def 95%,vertical);
+	h1 {
+		font-size: 40px;
+		text-align: center;
+		padding: 20px 0;
+		color:$c-def ;
+	}
+		p {
+			text-align: center;
+			padding: 0 0 20px 0;
+			color: $c-def;
+		}
+		img {
+			width: 100%;
+			margin: auto;
+			@include background-gradient($c-main 92%,$c-def 92%,vertical)
+			// background-repeat: no-repeat;
+			// background-size: cover;
+			// background-position: center center;
+		}
+	}

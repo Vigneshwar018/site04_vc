@@ -14,6 +14,9 @@ var gulp = require('gulp'),
     zip = require('gulp-zip'),
     htmlreplace = require('gulp-html-replace'),
     rename = require("gulp-rename"),
+    stylish = require('jshint-stylish'),
+    jshint = require('gulp-jshint'),
+    // w3cjs = require('gulp-w3cjs'),
     stripCssComments = require('gulp-strip-css-comments'),
     browserSync = require('browser-sync').create();
 
@@ -39,7 +42,7 @@ if (env==='development') {
 
 jsSources = [
   // 'tools/js/jquery.js',
-  // 'components/scripts/TweenMax.min.js',
+  'tools/js/nav.js',
   // 'components/scripts/jquery.scrollmagic.min.js',
   'tools/js/script.js'
 ];
@@ -52,9 +55,9 @@ htmlSources = [outputDir + '*.html'];
 gulp.task('js', function() {
   'use strict';
 
-  // gulp.src('components/scripts/script.js')
-  //   .pipe(jshint('./.jshintrc'))
-  //   .pipe(jshint.reporter('jshint-stylish'));
+  gulp.src(jsSources)
+    .pipe(jshint('./.jshintrc'))
+    .pipe(jshint.reporter('jshint-stylish'));
 
   gulp.src(jsSources)
 
