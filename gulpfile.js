@@ -15,9 +15,7 @@ var gulp = require('gulp'),
     htmlreplace = require('gulp-html-replace'),
     rename = require("gulp-rename"),
     stripCssComments = require('gulp-strip-css-comments'),
-    // $           = require('gulp-load-plugins')(),
     browserSync = require('browser-sync').create();
-    // autoprefixer = require('autoprefixer');
 
 env = 'development';
 // env = 'production';
@@ -40,7 +38,7 @@ if (env==='development') {
 }
 
 jsSources = [
-  'tools/js/jquery.js',
+  // 'tools/js/jquery.js',
   // 'components/scripts/TweenMax.min.js',
   // 'components/scripts/jquery.scrollmagic.min.js',
   'tools/js/script.js'
@@ -48,37 +46,6 @@ jsSources = [
 
 sassSources = 'tools/sass/style.scss';
 htmlSources = [outputDir + '*.html'];
-
-
-// var   PHPMYADMIN_FOLDER = 'phpmyadmin',
-//       AUTOOPEN_ADMIN = false;
-
-//browserSync FILES
-// var LIVE_RELOAD_FILES = [
-//     // '**/*.css',
-//     // '*.css',
-//     // '**/*.js',
-//     // '*.js',
-//     '**/*.php',
-//     '*.php'
-//     // '*.html'
-// ];//browserSync FILES
-
-// var SERVERS = {
-//   DEV: { // Use 0.0.0.0 for access on devices in the same wifi
-//     HOST: '127.0.0.1',
-//     PORT: 3000
-//   },
-//   DEV_PHP: {
-//     HOST: '127.0.0.1', // For PHP server that will be proxied to DEV
-//     PORT: 8000
-//   },
-//   ADMIN: { // phpMyAdmin
-//     HOST: '127.0.0.1',
-//     PORT: 1337
-//   }
-// };
-
 
 
 //js
@@ -121,9 +88,6 @@ gulp.task('sass', function () {
     .pipe(gulpif(env === 'production', rename({suffix: '.min'})))
     .pipe(gulp.dest(outputDir + 'css'))
     .pipe(connect.reload())
-    // .pipe(browserSync.reload({
-    //   stream: true
-    // }));
     .pipe(browserSync.stream());
 });// sass
 
@@ -159,38 +123,7 @@ gulp.task('connect', function() {
     root: outputDir,
     livereload: true
   });
-
-  // // Server for wordpress (will be proxied)
-  // $.connectPhp.server({
-  //   base: outputDir,
-  //   hostname: SERVERS.DEV_PHP.HOST,
-  //   port: SERVERS.DEV_PHP.PORT
-  // });
-
-  // // Another server for phpMyAdmin, since connect-php doesn't support multiple bases
-  // $.connectPhp.server({
-  //   base: PHPMYADMIN_FOLDER,
-  //   open: AUTOOPEN_ADMIN,
-  //   hostname: SERVERS.ADMIN.HOST,
-  //   port: SERVERS.ADMIN.PORT
-  // });
-}); // connect
-
-// browser-sync
-// gulp.task('browser-sync', ['sass', 'php', 'js' ], function() {
-//   browserSync({
-//     files: LIVE_RELOAD_FILES,
-//     // proxy: "http://localhost/s01",
-//     //port:8888,
-//     notify: false
-//   }, function (err, bs) {
-//       if (err)
-//         console.log(err);
-//       else
-//         console.log('BrowserSync is ready.');
-//   });
-// });//browser-sync
-
+  }); // connect
 
 //browser-sync
 gulp.task('browser-sync', ['sass'], function() {
@@ -198,7 +131,6 @@ gulp.task('browser-sync', ['sass'], function() {
         proxy: "127.0.0.98:80/s04/production/",
         port:80,
         // server: "./development",
-        // files: LIVE_RELOAD_FILES,
         notify: false
     }, function (err, bs) {
       if (err)
@@ -210,7 +142,6 @@ gulp.task('browser-sync', ['sass'], function() {
         proxy: "127.0.0.98:80/s04/development/",
         port:80,
         // server: "./development",
-        // files: LIVE_RELOAD_FILES,
         notify: false
     }, function (err, bs) {
       if (err)
@@ -219,8 +150,7 @@ gulp.task('browser-sync', ['sass'], function() {
         console.log('BrowserSync is ready.');
       })
     );
-
-});
+});//browser-sync
 
 //html
 gulp.task('html', function() {
@@ -238,9 +168,6 @@ gulp.task('html', function() {
     .pipe(gulpif(env === 'production', minifyHTML()))
     .pipe(gulpif(env === 'production', gulp.dest(outputDir)))
     .pipe(connect.reload())
-    // .pipe(browserSync.reload({
-    //   stream: true
-    // }));
     .pipe(browserSync.stream());
 
 });//html
@@ -252,9 +179,6 @@ gulp.task('php', function() {
     // .pipe(gulpif(env === 'production', minifyPHP()))
     .pipe(gulpif(env === 'production', gulp.dest(outputDir)))
     .pipe(connect.reload())
-    // .pipe(browserSync.reload({
-    //   stream: true
-    // }));
     .pipe(browserSync.stream());
 
 });//PHP
@@ -271,20 +195,31 @@ gulp.task('move', function() {
 gulp.task('zip', function () {
   return gulp.src('production/**/*')
     .pipe(zip('website.zip'))
-    .pipe(gulp.dest('./'))
+    .pipe(gulp.dest('./'),console.log('\n█▀▀▀█ ▀█▀ █▀▀█   █▀▀█ █▀▀▀█ █▀▄▀█ █▀▀█ █    █▀▀▀ ▀▀█▀▀ █▀▀▀\n▄▄▄▀▀  █  █▄▄█ ▒ █    █   █ █ █ █ █▄▄█ █    █▀▀▀   █   █▀▀▀\n█▄▄▄█ ▄█▄ █      █▄▄█ █▄▄▄█ █   █ █    █▄▄█ █▄▄▄   █   █▄▄▄\n'))
+
 });//zip
 
-gulp.task('env', function() {
-  if (env === 'production')
-        console.log('env = production!! \n environment is production files will be output in production \n                              _                   _     _\n                             | |                 | |   (_)\n   _ __    _ __    ___     __| |  _   _    ___   | |_   _    ___    _ __\n  | \'_ \\  | \'__|  / _ \\  /  _` | | | | |  / __|  | __| | |  / _ \\  | \'_ \\\n  | |_) | | |    | (_) | | (_| | | |_| | | (__   | |_  | | | (_) | | | | |\n  | .__/  |_|     \\___/   \\__,_|  \\__,_|  \\___|   \\__| |_|  \\___/  |_| |_|\n  | |\n  |_|');
-      else
-        console.log('env = development!!  \n environment is development files will be output in development\n ___  ____ _  _ ____ _    ____ ___  _  _ ____ _  _ ___\n |  \\ |___ |  | |___ |    |  | |__] |\\/| |___ |\\ |  |\n |__/ |___  \\/  |___ |___ |__| |    |  | |___ | \\|  |');
-});
 
+
+//environment
+gulp.task('env', function() {
+  if (env === 'production'){
+        console.log(' env = production!!\n environment is production files will be output in production \n█▀▀█ █▀▀█ █▀▀▀█ █▀▀▄ █  █ █▀▀█ ▀▀█▀▀ ▀█▀ █▀▀▀█ █▄  █\n█▄▄█ █▄▄▀ █   █ █  █ █  █ █      █    █  █   █ █ █ █\n█    █  █ █▄▄▄█ █▄▄▀ ▀▄▄▀ █▄▄█   █   ▄█▄ █▄▄▄█ █  ▀█\n');
+      }else if (env === 'development') {
+        console.log(' env = development!!\n environment is development files will be output in development\n█▀▀▄ █▀▀▀ █   █ █▀▀▀ █    █▀▀▀█ █▀▀█ █▀▄▀█ █▀▀▀ █▄  █ ▀▀█▀▀\n█  █ █▀▀▀  █ █  █▀▀▀ █    █   █ █▄▄█ █ █ █ █▀▀▀ █ █ █   █  \n█▄▄▀ █▄▄▄  ▀▄▀  █▄▄▄ █▄▄█ █▄▄▄█ █    █   █ █▄▄▄ █  ▀█   █\n');
+      }else {
+    console.log(' environment not defined\n█  █ █▄  █ █▀▀▄ █▀▀▀ █▀▀▀ ▀█▀ █▄  █ █▀▀▀ █▀▀▄\n█  █ █ █ █ █  █ █▀▀▀ █▀▀▀  █  █ █ █ █▀▀▀ █  █\n▀▄▄▀ █  ▀█ █▄▄▀ █▄▄▄ █    ▄█▄ █  ▀█ █▄▄▄ █▄▄▀\n');
+      }
+});////environment
+
+//default
 // gulp.task('default', ['watch', 'html', 'sass', 'move', 'browser-sync', 'connect']);
 gulp.task('default', ['watch', 'sass', 'browser-sync', 'js', 'php', 'html', 'move','connect' ], function() {
-  if (env === 'production')
-        console.log('\n env = production!! \n environment is production files will be output in production \n                              _                   _     _\n                             | |                 | |   (_)\n   _ __    _ __    ___     __| |  _   _    ___   | |_   _    ___    _ __\n  | \'_ \\  | \'__|  / _ \\  /  _` | | | | |  / __|  | __| | |  / _ \\  | \'_ \\\n  | |_) | | |    | (_) | | (_| | | |_| | | (__   | |_  | | | (_) | | | | |\n  | .__/  |_|     \\___/   \\__,_|  \\__,_|  \\___|   \\__| |_|  \\___/  |_| |_|\n  | |\n  |_|\n');
-      else
-        console.log('\n env = development!!  \n environment is development files will be output in development\n ___  ____ _  _ ____ _    ____ ___  _  _ ____ _  _ ___\n |  \\ |___ |  | |___ |    |  | |__] |\\/| |___ |\\ |  |\n |__/ |___  \\/  |___ |___ |__| |    |  | |___ | \\|  |\n');
-});
+  if (env === 'production'){
+        console.log(' env = production!!\n environment is production files will be output in production \n█▀▀█ █▀▀█ █▀▀▀█ █▀▀▄ █  █ █▀▀█ ▀▀█▀▀ ▀█▀ █▀▀▀█ █▄  █\n█▄▄█ █▄▄▀ █   █ █  █ █  █ █      █    █  █   █ █ █ █\n█    █  █ █▄▄▄█ █▄▄▀ ▀▄▄▀ █▄▄█   █   ▄█▄ █▄▄▄█ █  ▀█\n');
+      }else if (env === 'development') {
+        console.log(' env = development!!\n environment is development files will be output in development\n█▀▀▄ █▀▀▀ █   █ █▀▀▀ █    █▀▀▀█ █▀▀█ █▀▄▀█ █▀▀▀ █▄  █ ▀▀█▀▀\n█  █ █▀▀▀  █ █  █▀▀▀ █    █   █ █▄▄█ █ █ █ █▀▀▀ █ █ █   █  \n█▄▄▀ █▄▄▄  ▀▄▀  █▄▄▄ █▄▄█ █▄▄▄█ █    █   █ █▄▄▄ █  ▀█   █\n');
+      }else {
+    console.log(' environment not defined\n█  █ █▄  █ █▀▀▄ █▀▀▀ █▀▀▀ ▀█▀ █▄  █ █▀▀▀ █▀▀▄\n█  █ █ █ █ █  █ █▀▀▀ █▀▀▀  █  █ █ █ █▀▀▀ █  █\n▀▄▄▀ █  ▀█ █▄▄▀ █▄▄▄ █    ▄█▄ █  ▀█ █▄▄▄ █▄▄▀\n');
+      }
+});//default

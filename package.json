@@ -28,6 +28,7 @@
     "gulp-ruby-sass": "^1.0.5",
     "gulp-sourcemaps": "^1.5.2",
     "gulp-strip-css-comments": "^1.2.0",
+    "gulp-tattoo": "0.0.5",
     "gulp-uglify": "^0.3.1",
     "gulp-util": "^2.2.20",
     "gulp-webserver": "^0.9.1",

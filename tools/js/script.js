@@ -1,5 +1,5 @@
 // vcc
 
-let vic = "vicky asaaa";
+let vic = "vicky jdjdjdnmytyt";
 
 console.log(vic);
