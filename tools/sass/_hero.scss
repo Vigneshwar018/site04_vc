@@ -4,6 +4,7 @@
 	margin: auto;
 }
 .hero {
+	padding-top: 30px;
 	@include background-gradient($c-main 90%,$c-def 95%,vertical);
 	h1 {
 		font-size: 40px;
