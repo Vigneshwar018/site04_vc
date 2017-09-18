@@ -1,37 +1,9 @@
 @import "reset";
 @import "variables";
+@import "base";
 @import "bootstrap-4.0.0-alpha.6/scss/bootstrap-grid";
 // @import "materialize-src/sass/materialize.scss";
 @import "nav";
 @import "hero";
-
-body {
-	font-family: $font;
-}
-
-.money {
-	margin:0 auto ;
-	padding:20px 0;
-	h2 {
-		font-size:30px;
-		text-align:center ;
-		padding-bottom:20px ;
-	}
-	h3 {
-		font-size:25px ;
-		text-align:center ;
-		padding-bottom:20px ;
-	}
-	p {
-		font-size:15px;
-		text-align:center ;
-		padding-bottom:20px ;
-	}
-	img {
-		margin:20px auto ;
-	//	width:100px ;
-		justify-content:center ;
-		display:flex;
-	}
-}
-
+@import "money";
+@import "footer";

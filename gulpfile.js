@@ -21,10 +21,11 @@ var gulp = require('gulp'),
     htmlbeautify = require('gulp-html-beautify'),
     // w3cjs = require('gulp-w3cjs'),
     stripCssComments = require('gulp-strip-css-comments'),
+    gcmq = require('gulp-group-css-media-queries'),
     browserSync = require('browser-sync').create();
 
-// env = 'development';
-env = 'production';
+env = 'development';
+// env = 'production';
 
 var env,
     jsSources,
@@ -89,6 +90,7 @@ gulp.task('sass', function () {
         console.error('Error!', err.message);
     })
     .pipe(autoprefixer())
+    // .pipe(gcmq())
     .pipe(gulpif(env === 'development', sourcemaps.write()))
     .pipe(gulpif(env === 'production', stripCssComments()))
     .pipe(gulpif(env === 'production', rename({suffix: '.min'})))
@@ -127,7 +129,7 @@ gulp.task('watch', function() {
 gulp.task('connect', function() {
   'use strict';
   connect.server({
-    root: outputDir,
+    root: './',
     livereload: true
   });
   }); // connect
@@ -136,7 +138,7 @@ gulp.task('connect', function() {
 gulp.task('browser-sync', ['sass'], function() {
     browserSync.init(gulpif(env === 'production', {
         // proxy: "127.0.0.98:80/s04/production/",
-        proxy: "127.0.0.98:8080",
+        proxy: "127.0.0.98:8080/production/",
         port:80,
         // server: "./development",
         notify: false
@@ -148,7 +150,7 @@ gulp.task('browser-sync', ['sass'], function() {
       }),
     gulpif(env === 'development', {
         // proxy: "127.0.0.98:80/s04/development/",
-        proxy: "127.0.0.98:8080",
+        proxy: "127.0.0.98:8080/development/",
         port:80,
         // server: "./development",
         notify: false
@@ -185,7 +187,9 @@ gulp.task('html', function() {
 gulp.task('html-partials', function () {
   return gulp.src('tools/html-page/*.html')
   .pipe(htmlPartial({
-    basePath: 'tools/html-page/html-partials/'
+    basePath: 'tools/html-page/html-partials/',
+    tagName: 'vc',
+    variablePrefix: '@@'
   }))
   .on('error', function (err) {
         console.error('Error!', err.message);
