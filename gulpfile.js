@@ -6,7 +6,6 @@ var gulp = require('gulp'),
     minifyHTML = require('gulp-minify-html'),
     sourcemaps = require('gulp-sourcemaps'),
     // postcss = require('gulp-postcss'),
-    // minifyPHP = require('@cedx/gulp-php-minify'),
     uglify = require('gulp-uglify'),
     concat = require('gulp-concat'),
     autoprefixer = require('gulp-autoprefixer'),
@@ -19,13 +18,14 @@ var gulp = require('gulp'),
     lec = require ('gulp-line-ending-corrector'),
     htmlPartial = require('gulp-html-partial'),
     htmlbeautify = require('gulp-html-beautify'),
-    // w3cjs = require('gulp-w3cjs'),
     stripCssComments = require('gulp-strip-css-comments'),
     gcmq = require('gulp-group-css-media-queries'),
+    pngcrush = require('imagemin-pngcrush'),
+    imagemin = require('gulp-imagemin'),
     browserSync = require('browser-sync').create();
 
-env = 'development';
-// env = 'production';
+// env = 'development';
+env = 'production';
 
 var env,
     jsSources,
@@ -36,7 +36,7 @@ var env,
 
 var reload = browserSync.reload;
 
-if (env==='development') {
+if (env === 'development') {
   outputDir = 'development/';
   sassStyle = 'expanded';
 } else {
@@ -121,6 +121,7 @@ gulp.task('watch', function() {
   // gulp.watch('development/*.html').on('change', browserSync.reload);
   gulp.watch(jsSources, ['js']).on('change', browserSync.reload);
   gulp.watch(['development/*.php', '*/*.php']).on('change', browserSync.reload);
+  gulp.watch('development/img/**/*.*', ['images']);
   gulp.watch(['tools/html-page/html-partials/*.html','tools/html-page/*.html'],['html-partials']).on('change', browserSync.reload);
   // gulp.watch(['development/css/*.css', '*/*.css']).on('change', browserSync.reload);
 });//watch
@@ -163,26 +164,6 @@ gulp.task('browser-sync', ['sass'], function() {
     );
 });//browser-sync
 
-//html
-gulp.task('html', function() {
-  'use strict';
-  gulp.src('tools/html-page/*.html')
-    .pipe(gulpif(env === 'production', htmlreplace({
-        'css': 'css/style.min.css',
-        'bootstrap_css': 'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css',
-        'bootstrap_js': 'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js',
-        'font_awesome': 'https://use.fontawesome.com/41fbfe827f.js',
-        'jquery': 'https://code.jquery.com/jquery-3.2.1.min.js',
-        'js': 'js/script.min.js'
-    })
-    ))
-    .pipe(gulpif(env === 'production', minifyHTML()))
-    .pipe(gulp.dest(outputDir))
-    .pipe(connect.reload())
-    .pipe(browserSync.stream());
-
-});//html
-
 //html-partials
 gulp.task('html-partials', function () {
   return gulp.src('tools/html-page/*.html')
@@ -223,13 +204,18 @@ gulp.task('php', function() {
 
 });//PHP
 
-
-// Copy images to production
-gulp.task('move', function() {
-  'use strict';
-  gulp.src('development/css/img/**/*.*')
-  .pipe(gulpif(env === 'production', gulp.dest(outputDir+'css/img')));
-});
+//imagemin
+gulp.task('images', function() {
+  gulp.src('development/img/**/*.*')
+    .pipe(gulpif(env === 'production', imagemin({
+      progressive: true,
+      svgoPlugins: [{ removeViewBox: false }],
+      use: [pngcrush()]
+    })))
+    .pipe(gulpif(env === 'production', gulp.dest(outputDir+'css/img')))
+    .pipe(connect.reload())
+    .pipe(browserSync.stream());
+});//imagemin
 
 //zip
 gulp.task('zip', function () {
@@ -238,8 +224,6 @@ gulp.task('zip', function () {
     .pipe(gulp.dest('./'),console.log('\n█▀▀▀█ ▀█▀ █▀▀█   █▀▀█ █▀▀▀█ █▀▄▀█ █▀▀█ █    █▀▀▀ ▀▀█▀▀ █▀▀▀\n▄▄▄▀▀  █  █▄▄█ ▒ █    █   █ █ █ █ █▄▄█ █    █▀▀▀   █   █▀▀▀\n█▄▄▄█ ▄█▄ █      █▄▄█ █▄▄▄█ █   █ █    █▄▄█ █▄▄▄   █   █▄▄▄\n'))
 
 });//zip
-
-
 
 //environment
 gulp.task('env', function() {
@@ -253,12 +237,13 @@ gulp.task('env', function() {
 });////environment
 
 //default
-gulp.task('default', ['watch', 'sass', 'browser-sync', 'js', 'php', 'html-partials', 'move','connect' ], function() {
+gulp.task('default', ['watch', 'sass', 'browser-sync', 'js', 'php', 'html-partials', 'images','connect' ], function() {
+  //environment
   if (env === 'production'){
         console.log(' env = production!!\n environment is production files will be output in production \n█▀▀█ █▀▀█ █▀▀▀█ █▀▀▄ █  █ █▀▀█ ▀▀█▀▀ ▀█▀ █▀▀▀█ █▄  █\n█▄▄█ █▄▄▀ █   █ █  █ █  █ █      █    █  █   █ █ █ █\n█    █  █ █▄▄▄█ █▄▄▀ ▀▄▄▀ █▄▄█   █   ▄█▄ █▄▄▄█ █  ▀█\n');
       }else if (env === 'development') {
         console.log(' env = development!!\n environment is development files will be output in development\n█▀▀▄ █▀▀▀ █   █ █▀▀▀ █    █▀▀▀█ █▀▀█ █▀▄▀█ █▀▀▀ █▄  █ ▀▀█▀▀\n█  █ █▀▀▀  █ █  █▀▀▀ █    █   █ █▄▄█ █ █ █ █▀▀▀ █ █ █   █  \n█▄▄▀ █▄▄▄  ▀▄▀  █▄▄▄ █▄▄█ █▄▄▄█ █    █   █ █▄▄▄ █  ▀█   █\n');
       }else {
     console.log(' environment not defined\n█  █ █▄  █ █▀▀▄ █▀▀▀ █▀▀▀ ▀█▀ █▄  █ █▀▀▀ █▀▀▄\n█  █ █ █ █ █  █ █▀▀▀ █▀▀▀  █  █ █ █ █▀▀▀ █  █\n▀▄▄▀ █  ▀█ █▄▄▀ █▄▄▄ █    ▄█▄ █  ▀█ █▄▄▄ █▄▄▀\n');
-      }
+      }//environment
 });//default
