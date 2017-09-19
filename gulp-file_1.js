@@ -6,6 +6,7 @@ var gulp = require('gulp'),
     minifyHTML = require('gulp-minify-html'),
     sourcemaps = require('gulp-sourcemaps'),
     // postcss = require('gulp-postcss'),
+    // minifyPHP = require('@cedx/gulp-php-minify'),
     uglify = require('gulp-uglify'),
     concat = require('gulp-concat'),
     autoprefixer = require('gulp-autoprefixer'),
@@ -15,17 +16,12 @@ var gulp = require('gulp'),
     rename = require("gulp-rename"),
     stylish = require('jshint-stylish'),
     jshint = require('gulp-jshint'),
-    lec = require ('gulp-line-ending-corrector'),
-    htmlPartial = require('gulp-html-partial'),
-    htmlbeautify = require('gulp-html-beautify'),
+    // w3cjs = require('gulp-w3cjs'),
     stripCssComments = require('gulp-strip-css-comments'),
-    gcmq = require('gulp-group-css-media-queries'),
-    pngcrush = require('imagemin-pngcrush'),
-    imagemin = require('gulp-imagemin'),
     browserSync = require('browser-sync').create();
 
-// env = 'development';
-env = 'production';
+env = 'development';
+// env = 'production';
 
 var env,
     jsSources,
@@ -36,7 +32,7 @@ var env,
 
 var reload = browserSync.reload;
 
-if (env === 'development') {
+if (env==='development') {
   outputDir = 'development/';
   sassStyle = 'expanded';
 } else {
@@ -59,9 +55,9 @@ htmlSources = [outputDir + '*.html'];
 gulp.task('js', function() {
   'use strict';
 
-  // gulp.src(jsSources)
-  //   .pipe(jshint('./.jshintrc'))
-  //   .pipe(jshint.reporter('jshint-stylish'));
+  gulp.src(jsSources)
+    .pipe(jshint('./.jshintrc'))
+    .pipe(jshint.reporter('jshint-stylish'));
 
   gulp.src(jsSources)
 
@@ -90,7 +86,6 @@ gulp.task('sass', function () {
         console.error('Error!', err.message);
     })
     .pipe(autoprefixer())
-    // .pipe(gcmq())
     .pipe(gulpif(env === 'development', sourcemaps.write()))
     .pipe(gulpif(env === 'production', stripCssComments()))
     .pipe(gulpif(env === 'production', rename({suffix: '.min'})))
@@ -118,19 +113,17 @@ gulp.task('sass', function () {
 gulp.task('watch', function() {
   'use strict';
   gulp.watch(['*.scss', 'tools/sass/*.scss'], ['sass']);
-  // gulp.watch('development/*.html').on('change', browserSync.reload);
+  gulp.watch('development/*.html', ['html']);
   gulp.watch(jsSources, ['js']).on('change', browserSync.reload);
   gulp.watch(['development/*.php', '*/*.php']).on('change', browserSync.reload);
-  gulp.watch('development/img/**/*.*', ['images']);
-  gulp.watch(['tools/html-page/html-partials/*.html','tools/html-page/*.html'],['html-partials']).on('change', browserSync.reload);
-  // gulp.watch(['development/css/*.css', '*/*.css']).on('change', browserSync.reload);
+  gulp.watch(['development/css/*.css', '*/*.css']).on('change', browserSync.reload);
 });//watch
 
 //connect
 gulp.task('connect', function() {
   'use strict';
   connect.server({
-    root: './',
+    root: outputDir,
     livereload: true
   });
   }); // connect
@@ -138,8 +131,7 @@ gulp.task('connect', function() {
 //browser-sync
 gulp.task('browser-sync', ['sass'], function() {
     browserSync.init(gulpif(env === 'production', {
-        // proxy: "127.0.0.98:80/s04/production/",
-        proxy: "127.0.0.98:8080/production/",
+        proxy: "127.0.0.98:80/s04/production/",
         port:80,
         // server: "./development",
         notify: false
@@ -150,8 +142,7 @@ gulp.task('browser-sync', ['sass'], function() {
         console.log('BrowserSync is ready.');
       }),
     gulpif(env === 'development', {
-        // proxy: "127.0.0.98:80/s04/development/",
-        proxy: "127.0.0.98:8080/development/",
+        proxy: "127.0.0.98:80/s04/development/",
         port:80,
         // server: "./development",
         notify: false
@@ -164,19 +155,11 @@ gulp.task('browser-sync', ['sass'], function() {
     );
 });//browser-sync
 
-//html-partials
-gulp.task('html-partials', function () {
-  return gulp.src('tools/html-page/*.html')
-  .pipe(htmlPartial({
-    basePath: 'tools/html-page/html-partials/',
-    tagName: 'vc',
-    variablePrefix: '@@'
-  }))
-  .on('error', function (err) {
-        console.error('Error!', err.message);
-    })
-  // .pipe(lec({verbose:true, eolc: 'LF', encoding:'utf8'})) // clean up line endings for useref to find flags
-  .pipe(gulpif(env === 'production', htmlreplace({
+//html
+gulp.task('html', function() {
+  'use strict';
+  gulp.src('development/*.html')
+    .pipe(gulpif(env === 'production', htmlreplace({
         'css': 'css/style.min.css',
         'bootstrap_css': 'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css',
         'bootstrap_js': 'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js',
@@ -185,13 +168,12 @@ gulp.task('html-partials', function () {
         'js': 'js/script.min.js'
     })
     ))
-  .pipe(gulpif(env === 'production', minifyHTML()))
-  .pipe(gulpif(env === 'development', htmlbeautify()))
-  .pipe(gulp.dest(outputDir))
-  .pipe(connect.reload())
-  .pipe(browserSync.stream());
-});//html-partials
+    .pipe(gulpif(env === 'production', minifyHTML()))
+    .pipe(gulpif(env === 'production', gulp.dest(outputDir)))
+    .pipe(connect.reload())
+    .pipe(browserSync.stream());
 
+});//html
 
 //PHP
 gulp.task('php', function() {
@@ -204,18 +186,13 @@ gulp.task('php', function() {
 
 });//PHP
 
-//imagemin
-gulp.task('images', function() {
-  gulp.src('development/img/**/*.*')
-    .pipe(gulpif(env === 'production', imagemin({
-      progressive: true,
-      svgoPlugins: [{ removeViewBox: false }],
-      use: [pngcrush()]
-    })))
-    .pipe(gulpif(env === 'production', gulp.dest(outputDir+'css/img')))
-    .pipe(connect.reload())
-    .pipe(browserSync.stream());
-});//imagemin
+
+// Copy images to production
+gulp.task('move', function() {
+  'use strict';
+  gulp.src('development/css/img/**/*.*')
+  .pipe(gulpif(env === 'production', gulp.dest(outputDir+'css/img')));
+});
 
 //zip
 gulp.task('zip', function () {
@@ -224,6 +201,8 @@ gulp.task('zip', function () {
     .pipe(gulp.dest('./'),console.log('\n█▀▀▀█ ▀█▀ █▀▀█   █▀▀█ █▀▀▀█ █▀▄▀█ █▀▀█ █    █▀▀▀ ▀▀█▀▀ █▀▀▀\n▄▄▄▀▀  █  █▄▄█ ▒ █    █   █ █ █ █ █▄▄█ █    █▀▀▀   █   █▀▀▀\n█▄▄▄█ ▄█▄ █      █▄▄█ █▄▄▄█ █   █ █    █▄▄█ █▄▄▄   █   █▄▄▄\n'))
 
 });//zip
+
+
 
 //environment
 gulp.task('env', function() {
@@ -237,13 +216,13 @@ gulp.task('env', function() {
 });////environment
 
 //default
-gulp.task('default', ['watch', 'sass', 'browser-sync', 'js', 'php', 'html-partials', 'images','connect' ], function() {
-  //environment
+// gulp.task('default', ['watch', 'html', 'sass', 'move', 'browser-sync', 'connect']);
+gulp.task('default', ['watch', 'sass', 'browser-sync', 'js', 'php', 'html', 'move','connect' ], function() {
   if (env === 'production'){
         console.log(' env = production!!\n environment is production files will be output in production \n█▀▀█ █▀▀█ █▀▀▀█ █▀▀▄ █  █ █▀▀█ ▀▀█▀▀ ▀█▀ █▀▀▀█ █▄  █\n█▄▄█ █▄▄▀ █   █ █  █ █  █ █      █    █  █   █ █ █ █\n█    █  █ █▄▄▄█ █▄▄▀ ▀▄▄▀ █▄▄█   █   ▄█▄ █▄▄▄█ █  ▀█\n');
       }else if (env === 'development') {
         console.log(' env = development!!\n environment is development files will be output in development\n█▀▀▄ █▀▀▀ █   █ █▀▀▀ █    █▀▀▀█ █▀▀█ █▀▄▀█ █▀▀▀ █▄  █ ▀▀█▀▀\n█  █ █▀▀▀  █ █  █▀▀▀ █    █   █ █▄▄█ █ █ █ █▀▀▀ █ █ █   █  \n█▄▄▀ █▄▄▄  ▀▄▀  █▄▄▄ █▄▄█ █▄▄▄█ █    █   █ █▄▄▄ █  ▀█   █\n');
       }else {
     console.log(' environment not defined\n█  █ █▄  █ █▀▀▄ █▀▀▀ █▀▀▀ ▀█▀ █▄  █ █▀▀▀ █▀▀▄\n█  █ █ █ █ █  █ █▀▀▀ █▀▀▀  █  █ █ █ █▀▀▀ █  █\n▀▄▄▀ █  ▀█ █▄▄▀ █▄▄▄ █    ▄█▄ █  ▀█ █▄▄▄ █▄▄▀\n');
-      }//environment
+      }
 });//default

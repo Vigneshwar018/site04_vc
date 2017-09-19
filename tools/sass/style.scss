@@ -1,10 +1,11 @@
 @import "reset";
+@import "juice";
+@import "pineapple-sass";
 @import "variables";
+@import "base";
+@import "bootstrap-4.0.0-alpha.6/scss/bootstrap-grid";
 // @import "materialize-src/sass/materialize.scss";
 @import "nav";
 @import "hero";
-
-body {
-	font-family: $font;
-}
-
+@import "money";
+@import "footer";
