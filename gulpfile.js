@@ -24,8 +24,8 @@ var gulp = require('gulp'),
     imagemin = require('gulp-imagemin'),
     browserSync = require('browser-sync').create();
 
-// env = 'development';
-env = 'production';
+env = 'development';
+// env = 'production';
 
 var env,
     jsSources,
@@ -237,7 +237,7 @@ gulp.task('env', function() {
 });////environment
 
 //default
-gulp.task('default', ['watch', 'sass', 'browser-sync', 'js', 'php', 'html-partials', 'images','connect' ], function() {
+gulp.task('default', ['watch','connect', 'sass', 'browser-sync', 'js', 'php', 'html-partials','images'], function() {
   //environment
   if (env === 'production'){
         console.log(' env = production!!\n environment is production files will be output in production \n█▀▀█ █▀▀█ █▀▀▀█ █▀▀▄ █  █ █▀▀█ ▀▀█▀▀ ▀█▀ █▀▀▀█ █▄  █\n█▄▄█ █▄▄▀ █   █ █  █ █  █ █      █    █  █   █ █ █ █\n█    █  █ █▄▄▄█ █▄▄▀ ▀▄▄▀ █▄▄█   █   ▄█▄ █▄▄▄█ █  ▀█\n');
