@@ -22,6 +22,8 @@ var gulp = require('gulp'),
     gcmq = require('gulp-group-css-media-queries'),
     pngcrush = require('imagemin-pngcrush'),
     imagemin = require('gulp-imagemin'),
+    uncss = require('gulp-uncss'),
+    purify = require('gulp-purifycss'),
     browserSync = require('browser-sync').create();
 
 env = 'development';
@@ -32,6 +34,7 @@ var env,
     sassSources,
     htmlSources,
     outputDir,
+    bootstrapSources,
     sassStyle;
 
 var reload = browserSync.reload;
@@ -52,8 +55,8 @@ jsSources = [
 ];
 
 sassSources = 'tools/sass/style.scss';
-htmlSources = [outputDir + '*.html'];
-
+htmlSources = outputDir + '*.html';
+bootstrapSources = 'tools/sass/bootstrap-4.0.0-alpha.6/scss/bootstrap-grid.scss';
 
 //js
 gulp.task('js', function() {
@@ -81,7 +84,7 @@ gulp.task('js', function() {
 
 
 // sass
-gulp.task('sass', function () {
+gulp.task('sass',function () {
     return sass(sassSources, {
       sourcemap: true,
       style: sassStyle
@@ -91,6 +94,11 @@ gulp.task('sass', function () {
     })
     .pipe(autoprefixer())
     // .pipe(gcmq())
+    // .pipe(uncss({
+    //         html: [htmlSources],
+    //         ignore: ['.custom']
+    //     }))  //Removing Unused CSS
+    // .pipe(purify(['development/js/script.js', htmlSources],{rejected:true}))
     .pipe(gulpif(env === 'development', sourcemaps.write()))
     .pipe(gulpif(env === 'production', stripCssComments()))
     .pipe(gulpif(env === 'production', rename({suffix: '.min'})))
@@ -99,25 +107,50 @@ gulp.task('sass', function () {
     .pipe(browserSync.stream());
 });// sass
 
+// bootstrap
+gulp.task('bootstrap', function () {
+    return sass(bootstrapSources, {
+      sourcemap: true,
+      style: sassStyle
+    })
+    .on('error', function (err) {
+        console.error('Error!', err.message);
+    })
+    .pipe(autoprefixer())
+    // .pipe(gcmq())
+    .pipe(uncss({
+            html: [htmlSources]
+        }))  //Removing Unused CSS
+    // .pipe(purify(['development/js/script.js', htmlSources],{rejected:true}))
+    // .pipe(gulpif(env === 'development', sourcemaps.write()))
+    // .pipe(gulpif(env === 'production', stripCssComments()))
+    .pipe(rename({suffix: '.custom',prefix: "_",extname: ".scss"}))
+    .pipe(gulp.dest('tools/sass/'))
+    // .pipe(connect.reload())
+    .pipe(browserSync.stream());
+});// bootstrap
+
+
 //compass
-// gulp.task('compass', function() {
-//   gulp.src(sassSources)
-//     .pipe(compass({
-//       sass: 'tools/sass',
-//       image: outputDir + 'images',
-//        style: sassStyle,
-//       sourcemap: true
-//     })
-//     .on('error', gutil.log))
-//     .pipe(gulp.dest(outputDir + 'css'))
-//     .pipe(connect.reload())
-// });//compass
+gulp.task('compass', function() {
+  gulp.src(sassSources)
+    .pipe(compass({
+      sass: 'tools/sass',
+      image: outputDir + 'images',
+       style: sassStyle,
+      sourcemap: true
+    })
+    .on('error', gutil.log))
+    .pipe(gulp.dest(outputDir + 'css'))
+    .pipe(connect.reload())
+});//compass
 
 
 // watch
 gulp.task('watch', function() {
   'use strict';
   gulp.watch(['*.scss', 'tools/sass/*.scss'], ['sass']);
+  gulp.watch([bootstrapSources, 'tools/sass/bootstrap-4.0.0-alpha.6/scss/*.scss'], ['bootstrap']);
   // gulp.watch('development/*.html').on('change', browserSync.reload);
   gulp.watch(jsSources, ['js']).on('change', browserSync.reload);
   gulp.watch(['development/*.php', '*/*.php']).on('change', browserSync.reload);
@@ -206,7 +239,7 @@ gulp.task('php', function() {
 
 //imagemin
 gulp.task('images', function() {
-  gulp.src('development/img/**/*.*')
+  gulp.src('development/css/img/**/*.*')
     .pipe(gulpif(env === 'production', imagemin({
       progressive: true,
       svgoPlugins: [{ removeViewBox: false }],

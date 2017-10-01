@@ -1,3 +1,3 @@
-let a = "vic hhh";
+let a = "vic ";
 
 console.log (a);

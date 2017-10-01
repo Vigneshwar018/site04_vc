@@ -19,7 +19,38 @@ footer {
 				margin: 20px;
 				text-align:center ;
 				// background-color:$c-def ;
+				transition: all .3s ease 0s;
+				&:hover ,
+				&:focus {
+					transform: translate3D(0,-5px,0);
+					}
+
 		}
+		// .fa-twitter {
+		// 	&:hover ,
+		// 	&:focus {
+		// 			color: $s-twitter;
+		// 		}
+		// 	}
+		// .fa-instagram {
+		// 	&:hover ,
+		// 	&:focus {
+		// 			color: $s-instagram;
+		// 		}
+		// }
+		// .fa-facebook {
+		// 	&:hover ,
+		// 	&:focus {
+		// 			color:$s-facebook;
+		// 		}
+		// }
+		// .fa-google-plus {
+		// 	&:hover ,
+		// 	&:focus {
+		// 			color: $s-google-plus;
+		// 		}
+		// }
+
 	}
 	.add {
 		background-color: lighten(darken($c-main,30%),5%);

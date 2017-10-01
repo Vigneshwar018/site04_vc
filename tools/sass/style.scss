@@ -3,9 +3,23 @@
 @import "pineapple-sass";
 @import "variables";
 @import "base";
-@import "bootstrap-4.0.0-alpha.6/scss/bootstrap-grid";
+@import "bootstrap-grid.custom";
 // @import "materialize-src/sass/materialize.scss";
 @import "nav";
 @import "hero";
 @import "money";
 @import "footer";
+
+.about {
+	padding: 20px;
+	h1 {
+		color: $c-main;
+		text-transform: uppercase;
+		padding: 20px;
+
+	}
+	p {
+		font-size: 20px;
+		font-weight: bold;
+	}
+}
