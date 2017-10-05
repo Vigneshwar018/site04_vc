@@ -1,7 +1,7 @@
-$c-main      : #1abc9c;
+$c-main      : #FD5B4E;
 $c-prim      : #1aa6b7;
 $c-def       : #fff;
-// lightblue : #Daecf3#FD5B4E
+// lightblue : #Daecf3 #FD5B4E
 // reddish   : #fe424d
 //  seablue  : #1aa6b7
 // darkblue  : #022d41
@@ -49,43 +49,48 @@ $fsize: 26px;
 }
 
 @mixin button($cl-1, $cl-2) {
-    border: $cl-1 solid 2px;
-    border-radius: 50px;
-    box-shadow: 20x 20x 8px 20px white;
+    border: $cl-1 solid 0.125rem;
+    border-radius: 3.125rem;
+    width: 10em; // 250px//10em; //25
+    margin: auto;
+    font-size: 1.5625rem;
+    padding: .625em ;
+    box-shadow: 0rem .0625rem 0.5rem .03125rem #555;
     color: $cl-1;
     background-color: $cl-2;
-    &:hover {
+    &:hover,
+    &:focus {
         background-color: $cl-1;
         color: $cl-2;
     }
 }
 
 
-%button {
-            outline: none;
-            border-radius: 40px;
-            border: none;
-            cursor: pointer;
-            box-shadow: 0px 2px 10px 1px rgba(#333, 0.5);
-            text-align: center;
-            min-width: 25%;
-            height: 10%;
-            font-size: 25px;
-            position: absolute;
-            top: 80%;
-            transform: translate(40%, -80%);
-            margin: 0px auto;
-            text-transform: uppercase;
-            &::-webkit-input-placeholder {
-                color: #fff;
-                text-transform: uppercase;
-            }
+
+@mixin ba($c1:null,$c2:null,$f:null,$m:0 auto,$p:null,$w:100%,$tt:null,$ta:center) {
+    color: $c1;
+    background-color: $c2;
+    font-size: $f;
+    width: $w;
+    margin: $m;
+    padding: $p;
+    text-transform:$tt;
+    text-align:$ta;
 }
 
-%h1 {
-            font-size: 40px;
-            text-transform: uppercase;
-            margin: 0 auto;
-            text-align: center;
-            padding: 30px 20px;
+@mixin ba-h($c1:null,$c2:null,$f:null,$p:null,$w:100%,$tt:null,$m:0 auto,$ta:center) {
+    color: $c1;
+    background-color: $c2;
+    font-size: $f;
+    width: $w;
+    margin: $m;
+    padding: $p;
+    text-transform:$tt;
+    text-align:$ta;
+    &:hover,
+    &:focus {
+        color: $c2;
+        background-color: $c1;
+        }
+
 }

@@ -1,25 +1,27 @@
-@import "reset";
-@import "juice";
-@import "pineapple-sass";
+@import "base/reset";
+@import "vendor/juice";
+@import "vendor/pineapple-sass";
 @import "variables";
-@import "base";
-@import "bootstrap-grid.custom";
+@import "base/base";
+// @import "vendor/bootstrap-4.0.0-alpha.6/scss/bootstrap-grid.scss";
+@import "vendor/bootstrap-grid.custom";
 // @import "materialize-src/sass/materialize.scss";
-@import "nav";
-@import "hero";
-@import "money";
-@import "footer";
+@import "pages/nav";
+@import "pages/hero";
+@import "pages/money";
+@import "pages/footer";
 
 .about {
-	padding: 20px;
+	padding: 1.25rem;
 	h1 {
 		color: $c-main;
 		text-transform: uppercase;
-		padding: 20px;
+		padding: 1.25rem; // 20px;
 
 	}
 	p {
-		font-size: 20px;
-		font-weight: bold;
+		// font-size: 1.25rem; // 20px;
+		// font-weight: bold;
+@include button( #ff6800,#fff);
 	}
 }

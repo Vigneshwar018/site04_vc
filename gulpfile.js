@@ -1,3 +1,6 @@
+env = 'development';
+// env = 'production';
+
 var gulp = require('gulp'),
     gutil = require('gulp-util'),
     sass = require('gulp-ruby-sass'),
@@ -15,19 +18,18 @@ var gulp = require('gulp'),
     rename = require("gulp-rename"),
     stylish = require('jshint-stylish'),
     jshint = require('gulp-jshint'),
-    lec = require ('gulp-line-ending-corrector'),
+    // lec = require ('gulp-line-ending-corrector'),
     htmlPartial = require('gulp-html-partial'),
     htmlbeautify = require('gulp-html-beautify'),
     stripCssComments = require('gulp-strip-css-comments'),
-    gcmq = require('gulp-group-css-media-queries'),
+    // gcmq = require('gulp-group-css-media-queries'),
     pngcrush = require('imagemin-pngcrush'),
     imagemin = require('gulp-imagemin'),
     uncss = require('gulp-uncss'),
+    plumber = require('gulp-plumber'),
     purify = require('gulp-purifycss'),
+    notify = require('gulp-notify'),
     browserSync = require('browser-sync').create();
-
-env = 'development';
-// env = 'production';
 
 var env,
     jsSources,
@@ -35,9 +37,12 @@ var env,
     htmlSources,
     outputDir,
     bootstrapSources,
+    port,
     sassStyle;
 
 var reload = browserSync.reload;
+
+port = 8080
 
 if (env === 'development') {
   outputDir = 'development/';
@@ -56,20 +61,36 @@ jsSources = [
 
 sassSources = 'tools/sass/style.scss';
 htmlSources = outputDir + '*.html';
-bootstrapSources = 'tools/sass/bootstrap-4.0.0-alpha.6/scss/bootstrap-grid.scss';
+bootstrapSources = 'tools/sass/vendor/bootstrap-4.0.0-alpha.6/scss/bootstrap-grid.scss';
 
 //js
 gulp.task('js', function() {
   'use strict';
 
-  // gulp.src(jsSources)
-  //   .pipe(jshint('./.jshintrc'))
-  //   .pipe(jshint.reporter('jshint-stylish'));
+  gulp.src(jsSources)
+    .pipe(plumber())
+    .pipe(jshint('./.jshintrc'))
+    .pipe(jshint.reporter('jshint-stylish'))
+    .pipe(notify(function (file) {
+      if (file.jshint.success) {
+        // Don't show something if success
+        return false;
+      }
+
+      var errors = file.jshint.results.map(function (data) {
+        if (data.error) {
+          return "(" + data.error.line + ':' + data.error.character + ') ' + data.error.reason;
+        }
+      }).join("\n");
+      return file.relative + " (" + file.jshint.results.length + " errors)\n" + errors;
+    }));
+
 
   gulp.src(jsSources)
 
     .pipe(concat('script.js'))
     // .pipe(browserify())
+    .pipe(plumber())
     .on('error', gutil.log)
     .pipe(gulpif(env === 'development', sourcemaps.init()))
     .pipe(babel({
@@ -96,7 +117,7 @@ gulp.task('sass',function () {
     // .pipe(gcmq())
     // .pipe(uncss({
     //         html: [htmlSources],
-    //         ignore: ['.custom']
+    //         ignore: ['#header .btn.toggel span','#header .active']
     //     }))  //Removing Unused CSS
     // .pipe(purify(['development/js/script.js', htmlSources],{rejected:true}))
     .pipe(gulpif(env === 'development', sourcemaps.write()))
@@ -125,7 +146,7 @@ gulp.task('bootstrap', function () {
     // .pipe(gulpif(env === 'development', sourcemaps.write()))
     // .pipe(gulpif(env === 'production', stripCssComments()))
     .pipe(rename({suffix: '.custom',prefix: "_",extname: ".scss"}))
-    .pipe(gulp.dest('tools/sass/'))
+    .pipe(gulp.dest('tools/sass/vendor/'))
     // .pipe(connect.reload())
     .pipe(browserSync.stream());
 });// bootstrap
@@ -149,13 +170,13 @@ gulp.task('compass', function() {
 // watch
 gulp.task('watch', function() {
   'use strict';
-  gulp.watch(['*.scss', 'tools/sass/*.scss'], ['sass']);
-  gulp.watch([bootstrapSources, 'tools/sass/bootstrap-4.0.0-alpha.6/scss/*.scss'], ['bootstrap']);
+  gulp.watch(['tools/sass/**/*.scss', 'tools/sass/*.scss'], ['sass']);
+  gulp.watch([bootstrapSources, 'tools/sass/vendor/bootstrap-4.0.0-alpha.6/scss/*.scss'], ['bootstrap']);
   // gulp.watch('development/*.html').on('change', browserSync.reload);
   gulp.watch(jsSources, ['js']).on('change', browserSync.reload);
   gulp.watch(['development/*.php', '*/*.php']).on('change', browserSync.reload);
   gulp.watch('development/img/**/*.*', ['images']);
-  gulp.watch(['tools/html-page/html-partials/*.html','tools/html-page/*.html'],['html-partials']).on('change', browserSync.reload);
+  gulp.watch(['tools/html-page/html-partials/*.html','tools/html-page/*.html'],['html-partials']);
   // gulp.watch(['development/css/*.css', '*/*.css']).on('change', browserSync.reload);
 });//watch
 
@@ -164,7 +185,8 @@ gulp.task('connect', function() {
   'use strict';
   connect.server({
     root: './',
-    livereload: true
+    livereload: true,
+    port: port
   });
   }); // connect
 
@@ -172,7 +194,7 @@ gulp.task('connect', function() {
 gulp.task('browser-sync', ['sass'], function() {
     browserSync.init(gulpif(env === 'production', {
         // proxy: "127.0.0.98:80/s04/production/",
-        proxy: "127.0.0.98:8080/production/",
+        proxy: "127.0.0.98:" + port + "/production/",
         port:80,
         // server: "./development",
         notify: false
@@ -184,7 +206,7 @@ gulp.task('browser-sync', ['sass'], function() {
       }),
     gulpif(env === 'development', {
         // proxy: "127.0.0.98:80/s04/development/",
-        proxy: "127.0.0.98:8080/development/",
+        proxy: "127.0.0.98:" + port + "/development/",
         port:80,
         // server: "./development",
         notify: false
@@ -239,15 +261,15 @@ gulp.task('php', function() {
 
 //imagemin
 gulp.task('images', function() {
-  gulp.src('development/css/img/**/*.*')
+  gulp.src('development/css/img/*.*')
     .pipe(gulpif(env === 'production', imagemin({
       progressive: true,
       svgoPlugins: [{ removeViewBox: false }],
       use: [pngcrush()]
     })))
     .pipe(gulpif(env === 'production', gulp.dest(outputDir+'css/img')))
-    .pipe(connect.reload())
-    .pipe(browserSync.stream());
+    // .pipe(connect.reload())
+    // .pipe(browserSync.stream());
 });//imagemin
 
 //zip

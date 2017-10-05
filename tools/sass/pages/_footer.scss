@@ -2,7 +2,7 @@ footer {
 	.logo {
 		margin:0 auto ;
 		background-color:$c-main;
-		padding:10px;
+		padding:.625rem; // 10px;
 		text-align:center ;
 		img {
 			margin:0 auto ;
@@ -11,12 +11,12 @@ footer {
 	.social {
 		background-color:darken($c-main, 25%) ;
 		text-align:center ;
-		padding:0px 0px 20px ;
+		padding:0rem 0px 1.25rem; // 20px
 			.fa {
 				color:$c-def ;
-				font-size:30px ;
-				padding:5px ;
-				margin: 20px;
+				font-size:1.875rem; // 30px
+				padding:.3125rem; // 5px ;
+				margin: 1.25rem; // 20px;
 				text-align:center ;
 				// background-color:$c-def ;
 				transition: all .3s ease 0s;
@@ -54,21 +54,21 @@ footer {
 	}
 	.add {
 		background-color: lighten(darken($c-main,30%),5%);
-		padding: 0 0 20px;
+		padding: 0 0 1.25rem; // 20px;
 		text-align: center;
-		font-size: 25px;
+		font-size: 1.5625rem; // 25px;
 		color: $c-def;
 		text-transform: capitalize;
 		p {
-			font-size: 25px;
-			padding: 20px;
+			font-size: 1.5625rem; // 25px;
+			padding: 1.25rem; // 20px;
 		}
 	}
 	.brand {
 		background-color: darken($c-def,10%);
 		p {
-			font-size: 20px;
-			padding: 20px;
+			font-size: 1.25rem; // 20px;
+			padding: 1.25rem; // 20px;
 
 		}
 	}
