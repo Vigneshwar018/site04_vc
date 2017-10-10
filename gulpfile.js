@@ -110,10 +110,13 @@ gulp.task('sass',function () {
       sourcemap: true,
       style: sassStyle
     })
+    .pipe(plumber())
     .on('error', function (err) {
         console.error('Error!', err.message);
     })
-    .pipe(autoprefixer())
+    .pipe(autoprefixer({
+    	browsers: ['last 2 version', 'safari 5', 'ie 6', 'ie 7', 'ie 8', 'ie 9', 'opera 12.1', 'ios 6', 'android 4']
+}))
     // .pipe(gcmq())
     // .pipe(uncss({
     //         html: [htmlSources],
